@@ -87,7 +87,7 @@ module.exports = function(config) {
 Check example [application](https://github.com/tomastrajan/jasmine-async-sugar/blob/master/test/app.js) and corresponding [tests](https://github.com/tomastrajan/jasmine-async-sugar/blob/master/test/app.spec.js).
 
 ### How it works ?
-Library was created because we encountered problem using standard `$rootScope.$digest();` at the end of the test in one particulat situation where we were chaining Angular's `$q` and Node's `q` promises together. In that case one call to `$rootScope.$digest();` isn't enough even if all `q` promises are properly wrapped with `$q.when(qPromise);`. Library internaly uses `setInterval`, which will be called until all chained promises are resolved and `done();` called. At the end the inteval is cleared.
+Library was created because we encountered problem using standard `$rootScope.$digest();` at the end of the test in one particular situation where we were chaining Angular's `$q` and Node's `q` promises together. In that case one call to `$rootScope.$digest();` isn't enough even if all `q` promises are properly wrapped with `$q.when(qPromise);`. Library internaly uses `setInterval`, which will call `$rootScope.$digest();` until all chained promises are resolved and `done();` called. At the end the inteval is cleared.
 
 # Contributing
 
