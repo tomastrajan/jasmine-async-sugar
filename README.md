@@ -9,21 +9,38 @@ Drop-in syntax sugar for Jasmine 2.X test framework to enhance testing of async 
     
 // ... initialize angular module, inject $rootScope, $timeout and service
 
-it('tests async functionality of Angular JS 1.X service', function(done) {
+it('tests async functionality in standard way', function(done) {
 
     AsyncService.resolveAsync()
         .then(function(response) {
             expect(response).toBe('response');
+            
+            // call done() explicitly
             done();
         });
 
+    // we use $timeout in service, which is mocked because we included angular-mocks so we have to trigger manually
     $timeout.flush();
+    
+    // we have to call $rootScope.$digest() to process pending promises in angular context
     $rootScope.$digest();
 });
 
     // vs
     
 // jasmine-async-sugar
+
+itAsync('tests async functionality without "done", manual "$rootScope.$digest" and "$timeout.flush" triggering', function() {
+
+    // only thing we need to do is return promise 
+    // $rootScope.$digest(), $timeout.flush() and done() are handled automatically by library
+    return AsyncService.resolveAsync()
+        .then(function(response) {
+            expect(response).toBe('response');
+        });
+
+});
+
 
 ```
 
