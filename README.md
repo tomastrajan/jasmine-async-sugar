@@ -31,7 +31,6 @@ it('tests async functionality of Angular JS 1.X service', function(done) {
 * `itAsync`
 * `fitAsync`
 * `xitAsync`
-
 * `beforeEachAsync`
 * `beforeAllAsync`
 * `afterEachAsync`
