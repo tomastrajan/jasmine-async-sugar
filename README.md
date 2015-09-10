@@ -28,14 +28,14 @@ it('tests async functionality of Angular JS 1.X service', function(done) {
 ```
 
 ## Supported methods
-* `itAsync` -> `it`
-* `itAsync` -> `it`
-* `itAsync` -> `it`
-* `itAsync` -> `it`
-* `itAsync` -> `it`
-* `itAsync` -> `it`
-* `itAsync` -> `it`
+* `itAsync`
+* `fitAsync`
+* `xitAsync`
 
+* `beforeEachAsync`
+* `beforeAllAsync`
+* `afterEachAsync`
+* `afterAllAsync`
 
 ## How to use it?
 
