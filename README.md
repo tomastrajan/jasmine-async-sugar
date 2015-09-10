@@ -1,4 +1,4 @@
-# Jasmine async sugar (jasmine-async-sugar)
+# Jasmine async syntax sugar
 
 Drop-in syntax sugar for Jasmine 2.X test framework to enhance testing of async (promise) functionality to be used with Angular 1.X. Library adds extra global methods which handle async tests implicitly without need to call `$rootScope.$digest();`, `$timeout.flush();` or `done()`.
 
