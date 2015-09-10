@@ -86,6 +86,9 @@ module.exports = function(config) {
 ### Example of tests using async methods
 Check example [application](https://github.com/tomastrajan/jasmine-async-sugar/blob/master/test/app.js) and corresponding [tests](https://github.com/tomastrajan/jasmine-async-sugar/blob/master/test/app.spec.js).
 
+### How it works ?
+Library was created because we encountered problem using standard `$rootScope.$digest();` at the end of the test in one particulat situation where we were chaining Angular's `$q` and Node's `q` promises together. In that case one call to `$rootScope.$digest();` isn't enough even if all `q` promises are properly wrapped with `$q.when(qPromise);`. Library internaly uses `setInterval`, which will be called until all chained promises are resolved and `done();` called. At the end the inteval is cleared.
+
 # Contributing
 
 Please, feel free to submit bugs (prefferably with pull requests) or new features.
