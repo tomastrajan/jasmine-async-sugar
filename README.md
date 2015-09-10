@@ -56,7 +56,7 @@ itAsync('tests async functionality without "done", manual "$rootScope.$digest" a
 
 ## How to use it?
 
-1. `bower install jasmine-async-sugar`
+1. `bower install jasmine-async-sugar --save-dev` or `bower i jasmine-async-sugar -D`
 2. add `jasmine-async-sugar.js` reference to `files` array in `karma.conf.js` or in karma task of `grunt` (`gulp` or other build system...)
 3. adjust your tests to use async methods
 
@@ -82,5 +82,18 @@ module.exports = function(config) {
     });
 };
 ``` 
+
+### Example of tests using async methods
+Check example [application](https://github.com/tomastrajan/jasmine-async-sugar/blob/master/test/app.js) and corresponding [tests](https://github.com/tomastrajan/jasmine-async-sugar/blob/master/test/app.spec.js)
+
+# Contributing
+
+This is a rather small library so there is limited opportunity to contribute, but feel free to submit bugs (prefferably with pull requests) or features
+
+## How to run tests?
+
+1. clone repository `git clone https://github.com/tomastrajan/jasmine-async-sugar.git`
+2. install dependencies by running `npm install` and `bower install`
+3. run tests by running `npm test`
 
 
