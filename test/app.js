@@ -12,7 +12,7 @@ angular
             $timeout(function() {
                 deferred.resolve('response');
             }, 1000);
-            return deferred;
+            return deferred.promise;
         }
 
         function rejectAsync() {
@@ -20,7 +20,7 @@ angular
             $timeout(function() {
                 deferred.reject('rejection');
             }, 1000);
-            return deferred;
+            return deferred.promise;
         }
 
     });

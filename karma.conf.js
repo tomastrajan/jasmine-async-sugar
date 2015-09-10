@@ -3,19 +3,25 @@ module.exports = function(config) {
         basePath: '',
         frameworks: ['jasmine'],
         files: [
+            // standard angular testing setup
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
+
+            // our drop in library file
+            'jasmine-async-sugar.js',
+
+            // test app and spec files
             'test/**/*.js',
             'test/**/*.spec.js'
         ],
         exclude: [
         ],
         preprocessors: {},
-        reporters: ['spec'],
+        reporters: ['mocha'],
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
-        autoWatch: true,
+        autoWatch: false,
         browsers: ['Chrome'],
         singleRun: true
     });

@@ -1,11 +1,13 @@
-(function(global) {
+(function(global, undefined) {
 
+    var MODULE_NAME = 'jasmine-async-sugar';
     var JASMINE_FUNCTIONS = ['it', 'fit', 'xit', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'];
     var ASYNC_SUFIX = 'Async';
 
     JASMINE_FUNCTIONS.forEach(function(jasmineFunctionName) {
+
         if (!global[jasmineFunctionName]) {
-            console.error('jasmine-async-sugar - Jasmine function: ' + jasmineFunctionName + ' not present in environment');
+            console.error(MODULE_NAME, 'Jasmine function: ' + jasmineFunctionName + ' not present in environment');
         }
         var jasmineFunctionNameAsync = jasmineFunctionName + ASYNC_SUFIX;
 
@@ -37,23 +39,33 @@
 
             return function(done) {
                 if (testFunction.length) {
-                    testFunction(doneAndClearInterval);
+                    // function uses "done" as parameter so it will be called in function
+                    testFunction(doneAndClearInterval)
+                        .catch(handleError);
                 } else {
+                    // function doesn't use "done" as parameter so call it explicitly here
                     testFunction()
                         .then(doneAndClearInterval)
-                        .catch(function (err) {
-                            console.log(err);
-                        });
+                        .catch(handleError);
                 }
+
                 intervalId = setInterval(function () {
                     this.$injector.get('$rootScope').$digest();
+                    this.$injector.get('$timeout').flush();
                 }.bind(this));
 
                 function doneAndClearInterval() {
                     clearInterval(intervalId);
                     done();
                 }
-            }
+
+                function handleError(error) {
+                    console.error(MODULE_NAME, 'unhandled rejection: ', JSON.stringify(error));
+                    clearInterval(intervalId);
+                }
+
+            };
+
         }
 
     }
