@@ -1,6 +1,8 @@
-# Jasmine async syntax sugar
+# jasmine-async-sugar
 
-Drop-in syntax sugar for Jasmine 2.X test framework to enhance testing of async (promise) functionality to be used with Angular 1.X. Library adds extra global methods which handle async tests implicitly without need to call `$rootScope.$digest();`, `$timeout.flush();` or `done()`.
+Drop-in syntax sugar for Jasmine 2.X test framework to enhance testing of async (promise) functionality to be used with Angular 1.X. 
+
+Library adds extra global methods which handle async tests implicitly without need to call `$rootScope.$digest();`, `$timeout.flush();` or `done()`.
 
 ## Standard Jasmine 2.X test vs jasmine-async-sugar
 
@@ -41,7 +43,6 @@ itAsync('tests async functionality without "done", manual "$rootScope.$digest" a
 
 });
 
-
 ```
 
 ## Supported methods
@@ -56,8 +57,8 @@ itAsync('tests async functionality without "done", manual "$rootScope.$digest" a
 ## How to use it?
 
 1. `bower install jasmine-async-sugar`
-2. add reference to `files` in `karma.conf.js` or in karma task of `grunt` (`gulp` or other build system...)
-3. adjust your tests
+2. add `jasmine-async-sugar.js` reference to `files` array in `karma.conf.js` or in karma task of `grunt` (`gulp` or other build system...)
+3. adjust your tests to use async methods
 
 ### Example karma.conf.js 
 ```javascript
@@ -71,7 +72,7 @@ module.exports = function(config) {
           'bower_components/angular-mocks/angular-mocks.js',
         
           // our drop in library file
-          'bower_components//jasmine-async-sugarjasmine-async-sugar.js',
+          'bower_components/jasmine-async-sugar/jasmine-async-sugar.js',
         
           // test app and spec files
           'test/**/*.js',
