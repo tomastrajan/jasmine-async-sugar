@@ -10,18 +10,25 @@ Drop-in syntax sugar for Jasmine 2.X test framework to enhance testing of async 
 
 ### Example karma.conf.js 
 ```
-files: [
-  // standard angular testing setup
-  'bower_components/angular/angular.js',
-  'bower_components/angular-mocks/angular-mocks.js',
+module.exports = function(config) {
+    config.set({
 
-  // our drop in library file
-  'bower_components//jasmine-async-sugarjasmine-async-sugar.js',
-
-  // test app and spec files
-  'test/**/*.js',
-  'test/**/*.spec.js'
-]
-```
+        // ...
+        files: [
+          // standard angular testing setup
+          'bower_components/angular/angular.js',
+          'bower_components/angular-mocks/angular-mocks.js',
+        
+          // our drop in library file
+          'bower_components//jasmine-async-sugarjasmine-async-sugar.js',
+        
+          // test app and spec files
+          'test/**/*.js',
+          'test/**/*.spec.js'
+        ]
+        // ...
+    });
+};
+``` 
 
 
