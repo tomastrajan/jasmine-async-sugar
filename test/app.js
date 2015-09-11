@@ -1,10 +1,11 @@
 angular
     .module('app', [])
-    .factory('AsyncService', function($q, $timeout) {
+    .factory('AsyncService', function($q, $timeout, $http) {
 
         return {
             resolveAsync: resolveAsync,
-            rejectAsync: rejectAsync
+            rejectAsync: rejectAsync,
+            resolveAfterHttpCall: resolveAfterHttpCall
         };
 
         function resolveAsync() {
@@ -21,6 +22,17 @@ angular
                 deferred.reject('rejection');
             }, 1000);
             return deferred.promise;
+        }
+
+        function resolveAfterHttpCall(){
+            return $http.get('www.google.com')
+                .then(function(response){
+                    return $q(function(resolve){
+                        $timeout(function(){
+                            resolve(response.data);
+                        }, 1000)
+                    })
+                })
         }
 
     });
