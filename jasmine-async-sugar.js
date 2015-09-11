@@ -8,6 +8,7 @@
 
         if (!global[jasmineFunctionName]) {
             console.error(MODULE_NAME, 'Jasmine function: ' + jasmineFunctionName + ' not present in environment');
+            return;
         }
         var jasmineFunctionNameAsync = jasmineFunctionName + ASYNC_SUFIX;
 
