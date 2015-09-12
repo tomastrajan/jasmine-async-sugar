@@ -46,14 +46,15 @@ describe('Standard Jasmine (2.X) async test implemented using "done"', function 
 
 describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', function () {
 
-    var AsyncService, $httpBackend;
+    var AsyncService, $httpBackend, $window;
 
     beforeEach(module('app'));
 
-    beforeEach(inject(function (_AsyncService_, _$httpBackend_) {
+    beforeEach(inject(function (_AsyncService_, _$httpBackend_, _$window_) {
 
         AsyncService = _AsyncService_;
         $httpBackend = _$httpBackend_;
+        $window = _$window_;
 
     }));
 
@@ -101,6 +102,21 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
                     expect(response).toBe('response');
                 });
         });
+
+        it('itAsync without done or returning promise will throw useful error', function (done) {
+            spyOn(console,'error');
+            var itMock = function (desc, fn) {
+                expect(fn).toThrowError("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
+                    done();
+            };
+            var globalWithJasmineMock = {
+                it: itMock
+            };
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+            globalWithJasmineMock.itAsync('thisTestMustFailGracefully', function () {
+                expect(3).toBe(3);
+            });
+        })
 
     });
 
