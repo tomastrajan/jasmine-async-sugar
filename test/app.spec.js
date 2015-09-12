@@ -1,3 +1,7 @@
+/* jshint jasmine: true */
+/*globals inject, itAsync, beforeEachAsync*/
+'use strict';
+
 describe('Standard Jasmine (2.X) async test implemented using "done"', function () {
 
     var $rootScope, $timeout, AsyncService, $httpBackend;
@@ -104,20 +108,20 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
         });
 
         it('itAsync without done or returning promise will throw useful error', function (done) {
-            spyOn(console,'error');
-            var itMock = function (desc, fn) {
-                expect(fn).toThrowError("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
-                    done();
-            };
             var globalWithJasmineMock = {
-                it: itMock
+                it: function (desc, fn) {
+                    expect(fn).toThrowError("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
+                    done();
+                }
             };
+
+            spyOn(console,'error');
             $window['jasmine-async-sugar'](globalWithJasmineMock);
+
             globalWithJasmineMock.itAsync('thisTestMustFailGracefully', function () {
                 expect(3).toBe(3);
             });
-        })
-
+        });
     });
 
     describe('beforeEachAsync (instead of "beforeEach"), also works with beforeAllAsync, afterEachAsync and afterAllAsync', function () {

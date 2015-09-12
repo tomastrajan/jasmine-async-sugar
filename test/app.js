@@ -1,3 +1,6 @@
+/* global angular */
+'use strict';
+
 angular
     .module('app', [])
     .factory('AsyncService', function($q, $timeout, $http) {
@@ -30,9 +33,9 @@ angular
                     return $q(function(resolve){
                         $timeout(function(){
                             resolve(response.data);
-                        }, 1000)
-                    })
-                })
+                        }, 1000);
+                    });
+                });
         }
 
     });

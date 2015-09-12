@@ -1,3 +1,5 @@
+'use strict';
+
 (function (global, undefined) {
 
     var MODULE_NAME = 'jasmine-async-sugar';
@@ -20,13 +22,13 @@
                 var args = Array.prototype.slice.call(arguments);
                 var testFunction, testDescription;
                 if (args.length === 1) {
-                    testFunction = args[0]
+                    testFunction = args[0];
                 } else {
                     testDescription = args[0];
                     testFunction = args[1];
                 }
                 return runAsync(global[jasmineFunctionName], testFunction, testDescription);
-            }
+            };
         });
 
 
@@ -98,9 +100,8 @@
             try {
                 $httpBackend.flush();
             } catch (err) {
-                if (err.message === 'No pending request to flush !') {
-                    //no pending request to be flushed, thats ok with me
-                } else {
+                //no pending request to be flushed, thats ok with me
+                if (err.message !== 'No pending request to flush !') {
                     throw err;
                 }
             }
@@ -110,9 +111,8 @@
             try {
                 $timeout.flush();
             } catch (err) {
-                if (err.message === 'No deferred tasks to be flushed') {
-                    //no deferred tasks to be flushed, thats ok with me
-                } else {
+                //no deferred tasks to be flushed, thats ok with me
+                if (err.message !== 'No deferred tasks to be flushed') {
                     throw err;
                 }
             }
