@@ -110,16 +110,42 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
         it('itAsync without done or returning promise will throw useful error', function (done) {
             var globalWithJasmineMock = {
                 it: function (desc, fn) {
+                    fn = fn.bind(this); // provides this.$injector
                     expect(fn).toThrowError("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
                     done();
                 }
+                    .bind(this)// provides this.$injector
             };
 
-            spyOn(console,'error');
+            spyOn(console, 'error');
             $window['jasmine-async-sugar'](globalWithJasmineMock);
 
             globalWithJasmineMock.itAsync('thisTestMustFailGracefully', function () {
                 expect(3).toBe(3);
+            });
+        });
+
+        it('itAsync with done must work normally without returning a promise', function (done) {
+            console.log('injector', this.$injector);
+            var globalWithJasmineMock = {
+                it: function (desc, fn) {
+                    fn = fn.bind(this); // provides this.$injector
+                    fn();
+                    done();
+                }
+                    .bind(this)// provides this.$injector
+            };
+
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            globalWithJasmineMock.itAsync('thisTestMustNotFail', function (done) {
+                AsyncService.resolveAfterHttpCall()
+                    .then(function (response) {
+                        expect(response).toBe('response');
+                        done();
+                    });
+
             });
         });
     });

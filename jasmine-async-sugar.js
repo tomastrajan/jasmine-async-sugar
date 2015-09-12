@@ -44,41 +44,48 @@
 
                 var intervalId;
 
-                return function (done) {
+                return function isCalledByJasmineFunction(done) {
+
+                    var angularContext = this;
+
                     if (testFunction.length) {
-                        // function uses "done" as parameter so it will be called in function
-                        testFunction(doneAndClearInterval)
-                            .catch(handleError);
+                        callTestFunctionWithDone();
                     } else {
-                        // function doesn't use "done" as parameter so call it explicitly here
+                        callTestFunctionWithoutDone();
+                    }
+
+                    intervalId = setInterval(resolvePromisesAndTimeoutsAndRequests);
+
+                    function callTestFunctionWithDone() {
+                        var promise = testFunction(doneAndClearInterval);
+                        if (promise && promise.catch) {
+                            promise.catch(handleError);
+                        }
+                    }
+
+                    function callTestFunctionWithoutDone() {
                         var promise = testFunction();
                         if (promise && promise.then) {
                             promise.then(doneAndClearInterval)
                                 .catch(handleError);
-                        }else{
+                        } else {
                             throw new Error("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
                         }
                     }
 
-                    function handleCrashedTesting() {
-                        console.error(MODULE_NAME, 'angular context is missing: ');
-                        clearInterval(intervalId);
-                    }
-
-                    intervalId = setInterval(function () {
-                        if (!this.$injector) {
+                    function resolvePromisesAndTimeoutsAndRequests() {
+                        if (!angularContext.$injector) {
                             return handleCrashedTesting();
                         }
 
-                        var $rootScope = this.$injector.get('$rootScope');
-                        var $timeout = this.$injector.get('$timeout');
-                        var $httpBackend = this.$injector.get('$httpBackend');
+                        var $rootScope = angularContext.$injector.get('$rootScope');
+                        var $timeout = angularContext.$injector.get('$timeout');
+                        var $httpBackend = angularContext.$injector.get('$httpBackend');
 
                         $rootScope.$digest();
                         flushTimeout($timeout);
                         flushHttp($httpBackend);
-
-                    }.bind(this));
+                    }
 
                     function doneAndClearInterval() {
                         clearInterval(intervalId);
@@ -90,10 +97,12 @@
                         clearInterval(intervalId);
                     }
 
+                    function handleCrashedTesting() {
+                        console.error(MODULE_NAME, 'angular context is missing: ');
+                        clearInterval(intervalId);
+                    }
                 };
-
             }
-
         }
 
         function flushHttp($httpBackend) {
