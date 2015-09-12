@@ -107,6 +107,11 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
                 });
         });
 
+        itAsync('itAsync must have the same "this" as a normal it', function (done) {
+            expect(this.$injector).toBeDefined();
+            done();
+        });
+
         it('itAsync without done or returning promise will throw useful error', function (done) {
             var globalWithJasmineMock = {
                 it: function (desc, fn) {
@@ -148,6 +153,8 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
 
             });
         });
+
+
     });
 
     describe('beforeEachAsync (instead of "beforeEach"), also works with beforeAllAsync, afterEachAsync and afterAllAsync', function () {

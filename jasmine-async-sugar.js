@@ -57,14 +57,14 @@
                     intervalId = setInterval(resolvePromisesAndTimeoutsAndRequests);
 
                     function callTestFunctionWithDone() {
-                        var promise = testFunction(doneAndClearInterval);
+                        var promise = testFunction.bind(angularContext)(doneAndClearInterval);
                         if (promise && promise.catch) {
                             promise.catch(handleError);
                         }
                     }
 
                     function callTestFunctionWithoutDone() {
-                        var promise = testFunction();
+                        var promise = testFunction.bind(angularContext)();
                         if (promise && promise.then) {
                             promise.then(doneAndClearInterval)
                                 .catch(handleError);
