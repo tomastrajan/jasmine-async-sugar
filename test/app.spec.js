@@ -111,7 +111,9 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             expect(this.$injector).toBeDefined();
             done();
         });
+    });
 
+    describe('error handling', function () {
         it('itAsync without done or returning promise will throw useful error', function (done) {
             var globalWithJasmineMock = {
                 it: function (desc, fn) {
@@ -131,7 +133,6 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
         });
 
         it('itAsync with done must work normally without returning a promise', function (done) {
-            console.log('injector', this.$injector);
             var globalWithJasmineMock = {
                 it: function (desc, fn) {
                     fn = fn.bind(this); // provides this.$injector
