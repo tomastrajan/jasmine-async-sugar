@@ -6,7 +6,10 @@
     var JASMINE_FUNCTIONS = ['it', 'fit', 'xit', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'];
     var ASYNC_SUFIX = 'Async';
 
-    global[MODULE_NAME] = function (global) {
+    global[MODULE_NAME] = registerJasmineAsyncSugarToGlobal;
+    global[MODULE_NAME](global);
+
+    function registerJasmineAsyncSugarToGlobal(global) {
 
 
         JASMINE_FUNCTIONS.forEach(function (jasmineFunctionName) {
@@ -126,6 +129,6 @@
                 }
             }
         }
-    };
-    global[MODULE_NAME](global);
+    }
+
 })(window);
