@@ -90,6 +90,28 @@
                         flushHttp($httpBackend);
                     }
 
+                    function flushHttp($httpBackend) {
+                        try {
+                            $httpBackend.flush();
+                        } catch (err) {
+                            //no pending request to be flushed, thats ok with me
+                            if (err.message !== 'No pending request to flush !') {
+                                throw err;
+                            }
+                        }
+                    }
+
+                    function flushTimeout($timeout) {
+                        try {
+                            $timeout.flush();
+                        } catch (err) {
+                            //no deferred tasks to be flushed, thats ok with me
+                            if (err.message !== 'No deferred tasks to be flushed') {
+                                throw err;
+                            }
+                        }
+                    }
+
                     function doneAndClearInterval() {
                         clearInterval(intervalId);
                         done();
@@ -108,27 +130,7 @@
             }
         }
 
-        function flushHttp($httpBackend) {
-            try {
-                $httpBackend.flush();
-            } catch (err) {
-                //no pending request to be flushed, thats ok with me
-                if (err.message !== 'No pending request to flush !') {
-                    throw err;
-                }
-            }
-        }
 
-        function flushTimeout($timeout) {
-            try {
-                $timeout.flush();
-            } catch (err) {
-                //no deferred tasks to be flushed, thats ok with me
-                if (err.message !== 'No deferred tasks to be flushed') {
-                    throw err;
-                }
-            }
-        }
     }
 
 })(window);
