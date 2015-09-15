@@ -136,8 +136,7 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             var globalWithJasmineMock = {
                 it: function (desc, fn) {
                     fn = fn.bind(this); // provides this.$injector
-                    fn();
-                    done();
+                    fn(done);
                 }
                     .bind(this)// provides this.$injector
             };
@@ -145,6 +144,9 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             spyOn(console, 'error');
             $window['jasmine-async-sugar'](globalWithJasmineMock);
 
+            $httpBackend.expectGET(/.*google.com/).respond(function (m, url, data, headers) {
+                return [200, 'response', headers];
+            });
             globalWithJasmineMock.itAsync('thisTestMustNotFail', function (done) {
                 AsyncService.resolveAfterHttpCall()
                     .then(function (response) {
