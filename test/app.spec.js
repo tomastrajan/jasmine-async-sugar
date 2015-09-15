@@ -1,3 +1,7 @@
+/* jshint jasmine: true */
+/*globals inject, itAsync, beforeEachAsync*/
+'use strict';
+
 describe('Standard Jasmine (2.X) async test implemented using "done"', function () {
 
     var $rootScope, $timeout, AsyncService, $httpBackend;
@@ -46,14 +50,15 @@ describe('Standard Jasmine (2.X) async test implemented using "done"', function 
 
 describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', function () {
 
-    var AsyncService, $httpBackend;
+    var AsyncService, $httpBackend, $window;
 
     beforeEach(module('app'));
 
-    beforeEach(inject(function (_AsyncService_, _$httpBackend_) {
+    beforeEach(inject(function (_AsyncService_, _$httpBackend_, _$window_) {
 
         AsyncService = _AsyncService_;
         $httpBackend = _$httpBackend_;
+        $window = _$window_;
 
     }));
 
@@ -101,6 +106,56 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
                     expect(response).toBe('response');
                 });
         });
+
+        itAsync('itAsync must have the same "this" as a normal it', function (done) {
+            expect(this.$injector).toBeDefined();
+            done();
+        });
+    });
+
+    describe('error handling', function () {
+        it('itAsync without done or returning promise will throw useful error', function (done) {
+            var globalWithJasmineMock = {
+                it: function (desc, fn) {
+                    fn = fn.bind(this); // provides this.$injector
+                    expect(fn).toThrowError("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
+                    done();
+                }
+                    .bind(this)// provides this.$injector
+            };
+
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            globalWithJasmineMock.itAsync('thisTestMustFailGracefully', function () {
+                expect(3).toBe(3);
+            });
+        });
+
+        it('itAsync with done must work normally without returning a promise', function (done) {
+            var globalWithJasmineMock = {
+                it: function (desc, fn) {
+                    fn = fn.bind(this); // provides this.$injector
+                    fn(done);
+                }
+                    .bind(this)// provides this.$injector
+            };
+
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            $httpBackend.expectGET(/.*google.com/).respond(function (m, url, data, headers) {
+                return [200, 'response', headers];
+            });
+            globalWithJasmineMock.itAsync('thisTestMustNotFail', function (done) {
+                AsyncService.resolveAfterHttpCall()
+                    .then(function (response) {
+                        expect(response).toBe('response');
+                        done();
+                    });
+            });
+        });
+
 
     });
 
