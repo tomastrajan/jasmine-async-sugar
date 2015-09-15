@@ -72,6 +72,7 @@
                             promise.then(doneAndClearInterval)
                                 .catch(handleError);
                         } else {
+                            clearInterval(intervalId);
                             throw new Error("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
                         }
                     }
@@ -94,8 +95,9 @@
                         try {
                             $httpBackend.flush();
                         } catch (err) {
-                            //no pending request to be flushed, thats ok with me
+                            //no pending request to be flushed, that's ok with me
                             if (err.message !== 'No pending request to flush !') {
+                                clearInterval(intervalId);
                                 throw err;
                             }
                         }
@@ -105,8 +107,9 @@
                         try {
                             $timeout.flush();
                         } catch (err) {
-                            //no deferred tasks to be flushed, thats ok with me
+                            //no deferred tasks to be flushed, that's ok with me
                             if (err.message !== 'No deferred tasks to be flushed') {
+                                clearInterval(intervalId);
                                 throw err;
                             }
                         }

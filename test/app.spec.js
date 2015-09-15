@@ -153,7 +153,6 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
                         expect(response).toBe('response');
                         done();
                     });
-
             });
         });
 
