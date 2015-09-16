@@ -118,8 +118,14 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             var globalWithJasmineMock = {
                 it: function (desc, fn) {
                     fn = fn.bind(this); // provides this.$injector
-                    expect(fn).toThrowError("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
-                    done();
+                    var innerDone = function(){
+                        done.fail('test should have failed');
+                    };
+                    innerDone.fail = function(message){
+                        expect(message).toBe("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
+                        done();
+                    };
+                    fn(innerDone);
                 }
                     .bind(this)// provides this.$injector
             };

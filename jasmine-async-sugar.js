@@ -51,6 +51,9 @@
 
                     var angularContext = this;
 
+                    //this is a guard that will prevent that done is called multiple times.
+                    var finished = false;
+
                     if (testFunction.length) {
                         callTestFunctionWithDone();
                     } else {
@@ -72,14 +75,17 @@
                             promise.then(doneAndClearInterval)
                                 .catch(handleError);
                         } else {
-                            clearInterval(intervalId);
-                            throw new Error("itAsync is used without returning a promise and without done, it that's correct, use it() instead");
+                            var message = "itAsync is used without returning a promise and without done, it that's correct, use it() instead";
+                            handleError(null, message);
                         }
                     }
 
                     function resolvePromisesAndTimeoutsAndRequests() {
+                        if (finished) {
+                            return;
+                        }
                         if (!angularContext.$injector) {
-                            return handleCrashedTesting();
+                            return handleError(null, 'angular context is missing: ');
                         }
 
                         var $rootScope = angularContext.$injector.get('$rootScope');
@@ -97,38 +103,46 @@
                         } catch (err) {
                             //no pending request to be flushed, that's ok with me
                             if (err.message !== 'No pending request to flush !') {
-                                clearInterval(intervalId);
-                                throw err;
+                                handleError(err);
                             }
                         }
                     }
 
                     function flushTimeout($timeout) {
+                        if (finished) {
+                            return;
+                        }
                         try {
                             $timeout.flush();
                         } catch (err) {
                             //no deferred tasks to be flushed, that's ok with me
                             if (err.message !== 'No deferred tasks to be flushed') {
-                                clearInterval(intervalId);
-                                throw err;
+                                handleError(err);
                             }
                         }
                     }
 
                     function doneAndClearInterval() {
                         clearInterval(intervalId);
+                        finished = true;
                         done();
                     }
 
-                    function handleError(error) {
-                        console.error(MODULE_NAME, 'unhandled rejection: ', JSON.stringify(error));
+                    function handleError(error, message) {
+                        message = message || 'unhandled rejection: ';
+                        if (error && error.message) {
+                            message = message + error.messsage
+                        } else if (error) {
+                            message = message + JSON.stringify(error);
+                        }
                         clearInterval(intervalId);
+                        finished = true;
+                        done.fail(message);
+                        if (error) {
+                            throw error;
+                        }
                     }
 
-                    function handleCrashedTesting() {
-                        console.error(MODULE_NAME, 'angular context is missing: ');
-                        clearInterval(intervalId);
-                    }
                 };
             }
         }
