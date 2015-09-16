@@ -139,7 +139,7 @@
                     function handleError(error, message) {
                         message = message || 'unhandled rejection: ';
                         if (error && error.message) {
-                            message = message + error.messsage
+                            message = message + error.message;
                         } else if (error) {
                             message = message + JSON.stringify(error);
                         }
