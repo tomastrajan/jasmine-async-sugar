@@ -54,6 +54,8 @@
                     //this is a guard that will prevent that done is called multiple times.
                     var finished = false;
 
+                    doneAndClearInterval.fail = failDoneAndClearInterval;
+
                     if (testFunction.length) {
                         callTestFunctionWithDone();
                     } else {
@@ -126,6 +128,12 @@
                         clearInterval(intervalId);
                         finished = true;
                         done();
+                    }
+
+                    function failDoneAndClearInterval(msg){
+                        clearInterval(intervalId);
+                        finished = true;
+                        done.fail(msg);
                     }
 
                     function handleError(error, message) {

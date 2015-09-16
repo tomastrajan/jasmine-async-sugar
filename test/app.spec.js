@@ -111,9 +111,37 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             expect(this.$injector).toBeDefined();
             done();
         });
+
+        itAsync('itAsync must provide done.fail to fail a test', function (done) {
+            expect(done.fail).toBeDefined();
+            done();
+        });
     });
 
     describe('error handling', function () {
+        it('itAsync must provide done.fail to fail a test', function (done) {
+            var globalWithJasmineMock = {
+                it: function (desc, fn) {
+                    fn = fn.bind(this); // provides this.$injector
+                    var innerDone = function(){
+                        done.fail('test should have failed');
+                    };
+                    innerDone.fail = function(message){
+                        expect(message).toBe("test failed correctly");
+                        done();
+                    };
+                    fn(innerDone);
+                }
+                    .bind(this)// provides this.$injector
+            };
+
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            globalWithJasmineMock.itAsync('this test will fail with done.fail', function (done) {
+                done.fail("test failed correctly");
+            });
+        });
         it('itAsync without done or returning promise will throw useful error', function (done) {
             var globalWithJasmineMock = {
                 it: function (desc, fn) {
