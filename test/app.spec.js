@@ -116,6 +116,21 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             expect(done.fail).toBeDefined();
             done();
         });
+
+        it('itAsync will accept the timeout as last parameter an pass it to the jasmine function', function () {
+            var globalWithJasmineMock = {
+                it: function (desc, fn, timeout) {
+                    expect(timeout).toBe(10000);
+                }
+                    .bind(this)// provides this.$injector
+            };
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            globalWithJasmineMock.itAsync('thisTestMustNotFail', function (done) {
+                done();
+            }, 10000);
+        });
     });
 
     describe('error handling', function () {
@@ -142,6 +157,7 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
                 done.fail("test failed correctly");
             });
         });
+
         it('itAsync without done or returning promise will throw useful error', function (done) {
             var globalWithJasmineMock = {
                 it: function (desc, fn) {

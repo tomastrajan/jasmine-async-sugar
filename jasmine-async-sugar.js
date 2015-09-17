@@ -23,24 +23,28 @@
             // register async methods into global context (window)
             global[jasmineFunctionNameAsync] = function () {
                 var args = Array.prototype.slice.call(arguments);
-                var testFunction, testDescription;
+                var testFunction, testDescription, timeout;
                 if (args.length === 1) {
                     testFunction = args[0];
-                } else {
+                } else if(typeof args[0] === "function"){
+                    testFunction = args[0];
+                    timeout = args[1];
+                }else{
                     testDescription = args[0];
                     testFunction = args[1];
+                    timeout = args[2];
                 }
-                return runAsync(global[jasmineFunctionName], testFunction, testDescription);
+                return runAsync(global[jasmineFunctionName], testFunction, testDescription, timeout);
             };
         });
 
 
-        function runAsync(jasmineFunction, testFunction, desc) {
+        function runAsync(jasmineFunction, testFunction, desc, timeout) {
 
             if (desc) {
-                jasmineFunction(desc, wrapTestFunction(testFunction));
+                jasmineFunction(desc, wrapTestFunction(testFunction), timeout);
             } else {
-                jasmineFunction(wrapTestFunction(testFunction));
+                jasmineFunction(wrapTestFunction(testFunction), timeout);
             }
 
             function wrapTestFunction(testFunction) {
@@ -139,7 +143,7 @@
                     function handleError(error, message) {
                         message = message || 'unhandled rejection: ';
                         if (error && error.message) {
-                            message = message + error.message;
+                            message = message + JSON.stringify(error.message);
                         } else if (error) {
                             message = message + JSON.stringify(error);
                         }
