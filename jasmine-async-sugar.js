@@ -1,6 +1,5 @@
-'use strict';
-
 (function (global, undefined) {
+    'use strict';
 
     var MODULE_NAME = 'jasmine-async-sugar';
     var JASMINE_FUNCTIONS = ['it', 'fit', 'xit', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'];
@@ -15,7 +14,7 @@
         JASMINE_FUNCTIONS.forEach(function (jasmineFunctionName) {
 
             if (!global[jasmineFunctionName]) {
-                console.error(MODULE_NAME, 'Jasmine function: ' + jasmineFunctionName + ' not present in environment');
+                window.console.error(MODULE_NAME, 'Jasmine function: ' + jasmineFunctionName + ' not present in environment');
                 return;
             }
             var jasmineFunctionNameAsync = jasmineFunctionName + ASYNC_SUFIX;
