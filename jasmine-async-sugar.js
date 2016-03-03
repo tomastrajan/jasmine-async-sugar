@@ -81,7 +81,7 @@
                                 .catch(handleError);
                         } else {
                             var message = "itAsync is used without returning a promise and without done, it that's correct, use it() instead";
-                            handleError(null, message);
+                            handleError(message);
                         }
                     }
 
@@ -90,14 +90,23 @@
                             return;
                         }
                         if (!angularContext.$injector) {
-                            return handleError(null, 'angular context is missing: ');
+                            //psst, jasmine will do the rest.
+                            clearInterval(intervalId);
+                            finished = true;
+                            return;
                         }
 
                         var $rootScope = angularContext.$injector.get('$rootScope');
                         var $timeout = angularContext.$injector.get('$timeout');
                         var $httpBackend = angularContext.$injector.get('$httpBackend');
 
-                        $rootScope.$digest();
+                        try {
+                            $rootScope.$digest();
+                        }catch(e){
+                            //The thrown error will leave angular thinking
+                            //it still is digesting, here we stop it from doing so.
+                            $rootScope.$$phase = null;
+                        }
                         flushTimeout($timeout);
                         flushHttp($httpBackend);
                     }
@@ -139,19 +148,16 @@
                         done.fail(msg);
                     }
 
-                    function handleError(error, message) {
-                        message = message || 'unhandled rejection: ';
-                        if (error && error.message) {
-                            message = message + JSON.stringify(error.message);
-                        } else if (error) {
-                            message = message + JSON.stringify(error);
+                    function handleError(error) {
+                        var message;
+                        if(error instanceof Error){
+                            message = error.stack;
+                        }else{
+                            message = error;
                         }
                         clearInterval(intervalId);
                         finished = true;
                         done.fail(message);
-                        if (error) {
-                            throw error;
-                        }
                     }
 
                 };

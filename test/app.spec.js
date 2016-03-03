@@ -50,15 +50,16 @@ describe('Standard Jasmine (2.X) async test implemented using "done"', function 
 
 describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', function () {
 
-    var AsyncService, $httpBackend, $window;
+    var AsyncService, $httpBackend, $window, $q;
 
     beforeEach(module('app'));
 
-    beforeEach(inject(function (_AsyncService_, _$httpBackend_, _$window_) {
+    beforeEach(inject(function (_AsyncService_, _$httpBackend_, _$window_, _$q_) {
 
         AsyncService = _AsyncService_;
         $httpBackend = _$httpBackend_;
         $window = _$window_;
+        $q = _$q_;
 
     }));
 
@@ -206,7 +207,62 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             });
         });
 
+        it('itAsync returning a promise, which is rejected with a string must report correctly', function (done) {
+            var globalWithJasmineMock = {
+                it: function (desc, fn) {
 
+                    var innerDone = function(){
+                        done.fail('test should have failed');
+                    };
+                    innerDone.fail = function(message){
+                        expect(message).toBe('a special reason');
+                        done();
+                    };
+
+                    fn.bind(this)(innerDone);
+                }.bind(this)// provides this.$injector
+            };
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            globalWithJasmineMock.itAsync('thisTestMustFail', function () {
+                return $q(function(resolve, reject){
+                    reject('a special reason');
+                });
+            });
+        });
+
+
+        it('itAsync returning a promise, which is rejected with an Error must report correctly', function (done) {
+            var globalWithJasmineMock = {
+                it: function (desc, fn) {
+
+                    var innerDone = function(){
+                        done.fail('test should have failed');
+                    };
+                    innerDone.fail = function(message){
+                        expect(message).toContain('a special reason');
+                        expect(message).toContain('specialThrowingFunction');
+                        done();
+                    };
+
+                    fn.bind(this)(innerDone);
+                }.bind(this)// provides this.$injector
+            };
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            globalWithJasmineMock.itAsync('thisTestMustFail', function () {
+                return $q(function(resolve, reject){
+                    resolve();
+                }).then(function(){
+                    specialThrowingFunction();
+                });
+                function specialThrowingFunction(){
+                    throw new Error('a special reason');
+                }
+            });
+        });
     });
 
     describe('beforeEachAsync (instead of "beforeEach"), also works with beforeAllAsync, afterEachAsync and afterAllAsync', function () {
