@@ -152,8 +152,14 @@
                         var message;
                         if(error instanceof Error){
                             message = error.stack;
-                        }else{
+                        }else if(typeof error === 'string' || typeof error === 'number'){
                             message = error;
+                        }else {
+                            try {
+                                message = JSON.stringify(error);
+                            }catch(err){
+                                message = error;
+                            }
                         }
                         clearInterval(intervalId);
                         finished = true;

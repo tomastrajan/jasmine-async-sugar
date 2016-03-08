@@ -232,6 +232,34 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
             });
         });
 
+        it('itAsync returning a promise, which is rejected with an object must report correctly', function (done) {
+            var globalWithJasmineMock = {
+                it: function (desc, fn) {
+
+                    var innerDone = function(){
+                        done.fail('test should have failed');
+                    };
+                    innerDone.fail = function(message){
+                        expect(message).toContain('specialKey');
+                        done();
+                    };
+
+                    fn.bind(this)(innerDone);
+                }.bind(this)// provides this.$injector
+            };
+            spyOn(console, 'error');
+            $window['jasmine-async-sugar'](globalWithJasmineMock);
+
+            globalWithJasmineMock.itAsync('thisTestMustFail', function () {
+                return $q(function(resolve, reject){
+                    var obj = {
+                        specialKey: 'value'
+                    };
+                    reject(obj);
+                });
+            });
+        });
+
 
         it('itAsync returning a promise, which is rejected with an Error must report correctly', function (done) {
             var globalWithJasmineMock = {
