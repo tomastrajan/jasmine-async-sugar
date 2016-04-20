@@ -139,13 +139,23 @@
                     function doneAndClearInterval() {
                         clearInterval(intervalId);
                         finished = true;
-                        done();
+                        setTimeout(done); // The setTimeout makes sure the next beforeEach(Async), itAsync, etc.
+                                          // will run OUTSIDE of a $digest phase. This is important when mimicking
+                                          // a user clicking on elements in follow-up steps, because a ng-click event
+                                          // handler triggers a $digest() which is not possible if we're alredy in a $digest phase.
                     }
 
                     function failDoneAndClearInterval(msg){
                         clearInterval(intervalId);
                         finished = true;
-                        done.fail(msg);
+
+                        // The setTimeout makes sure the next beforeEach(Async), it(Async), etc.
+                        // will run OUTSIDE of a $digest phase. This is important when mimicking
+                        // a user clicking on elements in follow-up steps, because a ng-click event
+                        // handler triggers a $digest() which is not possible if we're alredy in a $digest phase.
+                        setTimeout(function() {
+                            done.fail(msg);
+                        });
                     }
 
                     function handleError(error) {

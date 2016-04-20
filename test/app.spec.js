@@ -50,12 +50,12 @@ describe('Standard Jasmine (2.X) async test implemented using "done"', function 
 
 describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', function () {
 
-    var AsyncService, $httpBackend, $window, $q;
+    var $rootScope, AsyncService, $httpBackend, $window, $q;
 
     beforeEach(module('app'));
 
-    beforeEach(inject(function (_AsyncService_, _$httpBackend_, _$window_, _$q_) {
-
+    beforeEach(inject(function (_$rootScope_, _AsyncService_, _$httpBackend_, _$window_, _$q_) {
+        $rootScope = _$rootScope_;
         AsyncService = _AsyncService_;
         $httpBackend = _$httpBackend_;
         $window = _$window_;
@@ -311,5 +311,46 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
         });
 
     });
+
+    describe("code-blocks should always run in separate $digest cycles", function () {
+        var result;
+
+        beforeEach(function() {
+            $rootScope.$digest = $rootScope.$digest.bind($rootScope);
+        });
+
+        beforeEachAsync(function () {
+            // clicking somewhere might induce a $digest run (because in tests one usually simulates the click
+            // event synchronously:
+            expect($rootScope.$digest).not.toThrow();
+
+            return AsyncService.resolveAsync()
+                .then(function (response) {
+                    result = 1;
+                });
+        });
+
+        beforeEachAsync(function() {
+            expect(result).toBe(1);
+
+            // clicking somewhere might induce a $digest run (because in tests one usually simulates the click
+            // event synchronously:
+            expect($rootScope.$digest).not.toThrow();
+
+            return AsyncService.resolveAsync()
+                .then(function (response) {
+                    result = 2;
+                });
+
+        });
+
+        it('tests asynchronously retrieved result from "beforeEachAsync" block', function () {
+            expect($rootScope.$digest).not.toThrow();
+
+            expect(result).toBe(2);
+
+        });
+
+    })
 
 });
