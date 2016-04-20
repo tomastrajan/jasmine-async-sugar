@@ -1,6 +1,6 @@
 {
   "name": "jasmine-async-sugar",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "Drop-in sugar for Jasmine test framework to enhance testing of async (promise) functionality to be used with Angular 1.X",
   "repository": {
     "type": "git",
@@ -8,7 +8,8 @@
   },
   "authors": [
     "Tomas Trajan <tomas.trajan@gmail.com>",
-    "Emanuel Indermühle <emanuel@inthemill.ch>"
+    "Emanuel Indermühle <emanuel@inthemill.ch>",
+    "Nicolas Breitwieser <nicolas.breitwieser@googlemail.com"
   ],
   "main": "jasmine-async-sugar.js",
   "keywords": [
@@ -29,7 +30,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "angular": "~1.4.5",
-    "angular-mocks": "~1.4.5"
+    "angular": "~1.5.3",
+    "angular-mocks": "~1.5.3"
   }
 }
