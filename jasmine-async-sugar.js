@@ -106,6 +106,15 @@
                             //The thrown error will leave angular thinking
                             //it still is digesting, here we stop it from doing so.
                             $rootScope.$$phase = null;
+                            if (Array.isArray($rootScope.$$asyncQueue)) {
+                                $rootScope.$$asyncQueue.splice(0);
+                            }
+                            if (Array.isArray($rootScope.$$postDigestQueue)) {
+                                $rootScope.$$postDigestQueue.splice(0);
+                            }
+                            if (Array.isArray($rootScope.$$applyAsyncQueue)) {
+                                $rootScope.$$applyAsyncQueue.splice(0);
+                            }
                         }
                         flushTimeout($timeout);
                         flushHttp($httpBackend);
