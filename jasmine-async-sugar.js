@@ -100,25 +100,24 @@
                         var $timeout = angularContext.$injector.get('$timeout');
                         var $httpBackend = angularContext.$injector.get('$httpBackend');
 
-                        try {
-                            $rootScope.$digest();
-                        }catch(e){
-                            //The thrown error will leave angular thinking
-                            //it still is digesting, here we stop it from doing so.
-                            $rootScope.$$phase = null;
-                        }
+                        runDigest($rootScope);
                         flushTimeout($timeout);
                         flushHttp($httpBackend);
+                    }
+
+                    function runDigest($rootScope) {
+                        try {
+                            $rootScope.$digest();
+                        } catch (err) {
+                            handleError(err);
+                        }
                     }
 
                     function flushHttp($httpBackend) {
                         try {
                             $httpBackend.flush();
                         } catch (err) {
-                            //no pending request to be flushed, that's ok with me
-                            if (err.message !== 'No pending request to flush !') {
-                                handleError(err);
-                            }
+                            handleError(err);
                         }
                     }
 
@@ -129,10 +128,7 @@
                         try {
                             $timeout.flush();
                         } catch (err) {
-                            //no deferred tasks to be flushed, that's ok with me
-                            if (err.message !== 'No deferred tasks to be flushed') {
-                                handleError(err);
-                            }
+                            handleError(err);
                         }
                     }
 
@@ -145,7 +141,7 @@
                                           // handler triggers a $digest() which is not possible if we're alredy in a $digest phase.
                     }
 
-                    function failDoneAndClearInterval(msg){
+                    function failDoneAndClearInterval(msg) {
                         clearInterval(intervalId);
                         finished = true;
 
@@ -153,27 +149,54 @@
                         // will run OUTSIDE of a $digest phase. This is important when mimicking
                         // a user clicking on elements in follow-up steps, because a ng-click event
                         // handler triggers a $digest() which is not possible if we're alredy in a $digest phase.
-                        setTimeout(function() {
+                        setTimeout(function () {
                             done.fail(msg);
                         });
                     }
 
                     function handleError(error) {
-                        var message;
-                        if(error instanceof Error){
-                            message = error.stack;
-                        }else if(typeof error === 'string' || typeof error === 'number'){
-                            message = error;
-                        }else {
-                            try {
-                                message = JSON.stringify(error);
-                            }catch(err){
-                                message = error;
+                        //
+                        // Thrown errors may leave angular thinking that it is still digesting: here we stop it from doing so.
+                        // Additionally, we reset the internal queues because because since recently, angular no longer shifts the queues
+                        // while processing them, but only resets them AFTER all tasks have successfully run (which does not work with
+                        // rethrowing errors in angular-mocks.js).
+                        //
+                        var $rootScope = angularContext && angularContext.$injector && angularContext.$injector.get('$rootScope');
+                        if ($rootScope) {
+                            $rootScope.$$phase = null;
+                            if (Array.isArray($rootScope.$$asyncQueue)) {
+                                $rootScope.$$asyncQueue.splice(0); // we use splice to preserve object identity
+                            }
+                            if (Array.isArray($rootScope.$$postDigestQueue)) {
+                                $rootScope.$$postDigestQueue.splice(0); // we use splice to preserve object identity
+                            }
+                            if (Array.isArray($rootScope.$$applyAsyncQueue)) {
+                                $rootScope.$$applyAsyncQueue.splice(0); // we use splice to preserve object identity
                             }
                         }
-                        clearInterval(intervalId);
-                        finished = true;
-                        done.fail(message);
+
+                        // No deferred tasks to be flushed, that's ok with me
+                        if (error.message !== 'No deferred tasks to be flushed' //
+                            && error.message !== 'No pending request to flush !')
+                        {
+                            var message;
+                            if (error instanceof Error) {
+                                message = error; // jasmine can handle Error objects better than strings, so we don't give error.stack!
+                            }
+                            else if (typeof error === 'string' || typeof error === 'number') {
+                                message = error;
+                            }
+                            else {
+                                try {
+                                    message = JSON.stringify(error);
+                                } catch (err) {
+                                    message = error;
+                                }
+                            }
+                            clearInterval(intervalId);
+                            finished = true;
+                            done.fail(message);
+                        }
                     }
 
                 };
