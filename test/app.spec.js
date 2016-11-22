@@ -268,9 +268,9 @@ describe('Jasmine (2.X) async test implemented using "jasmine-async-sugar"', fun
                     var innerDone = function(){
                         done.fail('test should have failed');
                     };
-                    innerDone.fail = function(message){
-                        expect(message).toContain('a special reason');
-                        expect(message).toContain('specialThrowingFunction');
+                    innerDone.fail = function(error){
+                        expect(error.message).toContain('a special reason');
+                        expect(error.stack).toContain('specialThrowingFunction');
                         done();
                     };
 
