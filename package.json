@@ -6,6 +6,10 @@
   "scripts": {
     "test": "karma start"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomastrajan/jasmine-async-sugar.git"
+  },
   "keywords": [
     "jasmine",
     "async",
